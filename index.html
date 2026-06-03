@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Lanka Card Offers Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#F4F3EF;--surface:#fff;--surface2:#EEEEE9;--surface3:#E5E4DE;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1C1C1A;--text2:#65655F;--text3:#A0A099;
+  --green:#1A7A5E;--green-bg:#E3F5EE;
+  --red:#B83232;--amber:#865000;--amber-bg:#FEF2DC;--amber-border:rgba(134,80,0,0.2);
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+/* Header */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
+.hinner{max-width:1200px;margin:0 auto;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.02em;text-decoration:none}
+.logo i{font-size:21px;color:var(--green)}
+.hright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.date-badge{font-size:11px;color:var(--text2);background:var(--surface2);padding:4px 10px;border-radius:20px;font-family:'DM Mono',monospace;white-space:nowrap}
+main{max-width:1200px;margin:0 auto;padding:22px 24px 80px}
+/* Section label */
+.slabel{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:9px}
+/* My Cards row */
+.my-cards-wrap{margin-bottom:22px}
+.my-cards{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.my-card{display:flex;align-items:center;gap:7px;padding:6px 12px 6px 9px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;box-shadow:var(--shadow)}
+.card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card-sub{font-size:10px;color:var(--text2);font-family:'DM Mono',monospace}
+.add-card-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius);font-size:12px;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s}
+.add-card-btn:hover{background:var(--surface);color:var(--text2)}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;margin-bottom:20px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
+.stat-lbl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.stat-val{font-size:26px;font-weight:600;letter-spacing:-.04em}
+.g{color:var(--green)}.r{color:var(--red)}.a{color:var(--amber)}
+/* Banner */
+.banner{display:none;align-items:center;gap:10px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:9px 14px;margin-bottom:18px;font-size:13px;color:var(--amber)}
+.banner i{font-size:15px;flex-shrink:0}
+/* Toolbar */
+.toolbar{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.trow{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tlbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);min-width:68px;flex-shrink:0}
+.swrap{position:relative;flex:1;min-width:200px}
+.swrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+#si{width:100%;padding:6px 10px 6px 32px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .12s}
+#si:focus{border-color:var(--green)}
+#si::placeholder{color:var(--text3)}
+.chip{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);transition:all .12s;user-select:none;white-space:nowrap}
+.chip:hover{background:var(--surface2);color:var(--text)}
+.chip.on{background:var(--text);color:#fff;border-color:var(--text)}
+.sort-btn{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);transition:all .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;font-family:'DM Sans',sans-serif}
+.sort-btn:hover{background:var(--surface2);color:var(--text)}
+.sort-btn.on{background:var(--text);color:#fff;border-color:var(--text)}
+.sort-btn i{font-size:12px}
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(295px,1fr));gap:11px}
+.ocard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:7px;transition:box-shadow .12s}
+.ocard:hover{box-shadow:var(--shadow-md)}
+.ocard.urgent{border-left:3px solid var(--red);border-radius:0 var(--radius) var(--radius) 0}
+.ocard.warn{border-left:3px solid #D48C00;border-radius:0 var(--radius) var(--radius) 0}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:5px}
+.badges{display:flex;gap:4px;flex-wrap:wrap}
+.bk-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:.02em}
+.cat-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--surface2);color:var(--text2);font-weight:500}
+.cacts{display:flex;gap:3px;flex-shrink:0}
+.icn-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;padding:2px;line-height:1;transition:color .12s}
+.icn-btn:hover{color:var(--red)}
+.icn-btn.edit:hover{color:var(--green)}
+.ctitle{font-size:13px;font-weight:600;color:var(--text);line-height:1.4}
+.cdesc{font-size:12px;color:var(--text2);line-height:1.5;flex:1}
+.cfoot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px;padding-top:7px;border-top:1px solid var(--border)}
+.exp-tag{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--text2);font-family:'DM Mono',monospace}
+.exp-tag.urgent{color:var(--red);font-weight:500}
+.exp-tag.warn{color:var(--amber);font-weight:500}
+.exp-tag i{font-size:12px}
+.disc-tag{font-size:13px;font-weight:600;color:var(--green);font-family:'DM Mono',monospace}
+.src-link{font-size:10px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:2px;transition:color .12s}
+.src-link:hover{color:var(--text)}
+.add-tile{border:1px dashed var(--border2);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:var(--text3);font-size:13px;background:transparent;transition:all .12s;min-height:80px;font-family:'DM Sans',sans-serif;width:100%}
+.add-tile:hover{background:var(--surface);color:var(--text2)}
+.empty-state{text-align:center;padding:36px 20px;color:var(--text2);grid-column:1/-1}
+.empty-state i{font-size:30px;display:block;margin:0 auto 9px;color:var(--text3)}
+/* Modals */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.38);z-index:200;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius);padding:22px;width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:92vh;overflow-y:auto}
+.modal h2{font-size:15px;font-weight:600;margin-bottom:18px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.fg input,.fg select{padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .12s;width:100%}
+.fg input:focus,.fg select:focus{border-color:var(--green)}
+.macts{display:flex;gap:8px;margin-top:18px;justify-content:flex-end}
+.btn{padding:7px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s;border:1px solid transparent;display:inline-flex;align-items:center;gap:5px}
+.btn-p{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-p:hover{background:#155f49}
+.btn-g{background:transparent;border-color:var(--border2);color:var(--text2)}
+.btn-g:hover{background:var(--surface2);color:var(--text)}
+.btn-hdr{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;background:var(--surface);border:1px solid var(--border2);color:var(--text2);font-family:'DM Sans',sans-serif;transition:all .12s;white-space:nowrap}
+.btn-hdr:hover{background:var(--surface2);color:var(--text)}
+.btn-hdr.g{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-hdr.g:hover{background:#155f49}
+.color-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.cswatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .12s}
+.cswatch.sel{border-color:var(--text)}
+/* Tabs */
+.tab-row{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.tab{padding:5px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .12s;border:1px solid transparent}
+.tab:hover{background:var(--surface2)}
+.tab.on{background:var(--text);color:#fff}
+/* Divider */
+.mdiv{height:1px;background:var(--border);margin:14px 0}
+@media(max-width:640px){
+  main{padding:14px 14px 60px}
+  header{padding:0 14px}
+  .fgrid{grid-template-columns:1fr}
+  .fg.full{grid-column:1}
+  .stats{grid-template-columns:1fr 1fr}
+  .tlbl{min-width:52px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hinner">
+    <a href="#" class="logo"><i class="ti ti-credit-card"></i> Sri Lanka Card Offers</a>
+    <div class="hright">
+      <div class="date-badge" id="date-disp"></div>
+      <button class="btn-hdr" onclick="openCardModal()"><i class="ti ti-wallet"></i> My Cards</button>
+      <button class="btn-hdr g" onclick="openOfferModal()"><i class="ti ti-plus"></i> Add offer</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="my-cards-wrap">
+    <div class="slabel">My active cards</div>
+    <div class="my-cards" id="my-cards-row"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-lbl">Total offers</div><div class="stat-val g" id="s-total">0</div></div>
+    <div class="stat"><div class="stat-lbl">Expiring ≤7 days</div><div class="stat-val r" id="s-urg">0</div></div>
+    <div class="stat"><div class="stat-lbl">Expiring today</div><div class="stat-val a" id="s-today">0</div></div>
+    <div class="stat"><div class="stat-lbl">Banks active</div><div class="stat-val" id="s-banks">0</div></div>
+    <div class="stat"><div class="stat-lbl">Categories</div><div class="stat-val" id="s-cats">0</div></div>
+  </div>
+
+  <div class="banner" id="banner"><i class="ti ti-alert-triangle"></i><span id="banner-txt"></span></div>
+
+  <div class="toolbar">
+    <div class="trow">
+      <span class="tlbl">Search</span>
+      <div class="swrap"><i class="ti ti-search"></i>
+        <input type="text" id="si" placeholder="Search merchant, bank, category, discount…" oninput="render()">
+      </div>
+    </div>
+    <div class="trow" id="bank-row"><span class="tlbl">Banks</span></div>
+    <div class="trow" id="cat-row">
+      <span class="tlbl">Category</span>
+      <div class="chip on" onclick="fltCat('all',this)">All</div>
+      <div class="chip" onclick="fltCat('Dining',this)">Dining</div>
+      <div class="chip" onclick="fltCat('Shopping',this)">Shopping</div>
+      <div class="chip" onclick="fltCat('Travel',this)">Travel</div>
+      <div class="chip" onclick="fltCat('Supermarket',this)">Supermarket</div>
+      <div class="chip" onclick="fltCat('Health',this)">Health</div>
+      <div class="chip" onclick="fltCat('Fuel',this)">Fuel</div>
+      <div class="chip" onclick="fltCat('Instalment',this)">Instalment</div>
+      <div class="chip" onclick="fltCat('Online',this)">Online</div>
+      <div class="chip" onclick="fltCat('Rewards',this)">Rewards</div>
+      <div class="chip" onclick="fltCat('Other',this)">Other</div>
+    </div>
+    <div class="trow">
+      <span class="tlbl">Expiry</span>
+      <div class="chip on" onclick="fltTime('all',this)">All dates</div>
+      <div class="chip" onclick="fltTime('week',this)">This week</div>
+      <div class="chip" onclick="fltTime('month',this)">This month</div>
+    </div>
+    <div class="trow">
+      <span class="tlbl">Sort by</span>
+      <button class="sort-btn on" onclick="setSort('expiry',this)"><i class="ti ti-calendar"></i> Expiry</button>
+      <button class="sort-btn" onclick="setSort('bank',this)"><i class="ti ti-building-bank"></i> Bank</button>
+      <button class="sort-btn" onclick="setSort('discount',this)"><i class="ti ti-percentage"></i> Discount</button>
+      <button class="sort-btn" onclick="setSort('cat',this)"><i class="ti ti-tag"></i> Category</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- Add/Edit Offer Modal -->
+<div class="overlay" id="offer-ov" onclick="ovClick(event,'offer-ov')">
+  <div class="modal">
+    <h2 id="offer-title">Add new offer</h2>
+    <div class="fgrid">
+      <div class="fg"><label>Bank</label><select id="f-bank"></select></div>
+      <div class="fg"><label>Category</label>
+        <select id="f-cat">
+          <option>Dining</option><option>Shopping</option><option>Travel</option>
+          <option>Supermarket</option><option>Health</option><option>Fuel</option>
+          <option>Instalment</option><option>Online</option><option>Rewards</option><option>Other</option>
+        </select></div>
+      <div class="fg full"><label>Offer title / merchant</label>
+        <input type="text" id="f-title" placeholder="e.g. 25% off at Pizza Hut"></div>
+      <div class="fg full"><label>Description / conditions</label>
+        <input type="text" id="f-desc" placeholder="e.g. Valid on dine-in, min spend Rs. 2,000"></div>
+      <div class="fg"><label>Discount / deal</label>
+        <input type="text" id="f-disc" placeholder="e.g. 25% off"></div>
+      <div class="fg"><label>Valid until</label>
+        <input type="date" id="f-exp"></div>
+      <div class="fg full"><label>Source URL (optional)</label>
+        <input type="text" id="f-url" placeholder="https://..."></div>
+    </div>
+    <div class="macts">
+      <button class="btn btn-g" onclick="closeOfferModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveOffer()"><i class="ti ti-check"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage Cards Modal -->
+<div class="overlay" id="card-ov" onclick="ovClick(event,'card-ov')">
+  <div class="modal">
+    <h2>My Cards</h2>
+    <div class="tab-row">
+      <div class="tab on" onclick="cardTab('my',this)">My Cards</div>
+      <div class="tab" onclick="cardTab('all',this)">All Sri Lanka Banks</div>
+    </div>
+
+    <!-- My Cards tab -->
+    <div id="tab-my">
+      <div id="card-list" style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px"></div>
+      <div class="mdiv"></div>
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:11px">Add custom card</div>
+      <div class="fgrid">
+        <div class="fg"><label>Bank name</label>
+          <input type="text" id="nc-bank" placeholder="e.g. Sampath Bank"></div>
+        <div class="fg"><label>Card type</label>
+          <input type="text" id="nc-type" placeholder="e.g. Platinum Visa"></div>
+        <div class="fg full"><label>Badge colour</label>
+          <div class="color-row" id="color-row"></div></div>
+      </div>
+      <div class="macts" style="margin-top:12px">
+        <button class="btn btn-g" onclick="closeCardModal()">Done</button>
+        <button class="btn btn-p" onclick="addCustomCard()"><i class="ti ti-plus"></i> Add card</button>
+      </div>
+    </div>
+
+    <!-- All Banks tab -->
+    <div id="tab-all" style="display:none">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Click a card to add it to your wallet.</div>
+      <div id="all-banks-list"></div>
+      <div class="macts" style="margin-top:12px">
+        <button class="btn btn-g" onclick="closeCardModal()">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE='sl-card-offers-v1';
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+
+const PALETTE=[
+  {l:'Blue',  bg:'#E8EFFA',t:'#1A4FA0'},
+  {l:'Purple',bg:'#EEEBFB',t:'#4C3DAA'},
+  {l:'Green', bg:'#E7F5E2',t:'#2E6B1A'},
+  {l:'Amber', bg:'#FEF3E0',t:'#865000'},
+  {l:'Red',   bg:'#FAEAEA',t:'#B83232'},
+  {l:'Teal',  bg:'#E3F5F2',t:'#0F6E62'},
+  {l:'Pink',  bg:'#FAEAF2',t:'#9A2A60'},
+  {l:'Indigo',bg:'#ECEEFF',t:'#3730A3'},
+  {l:'Olive', bg:'#F2F5E3',t:'#5A6B1A'},
+  {l:'Slate', bg:'#EEEEE9',t:'#4A4A44'},
+];
+
+// All Sri Lanka banks with card types
+const ALL_BANKS=[
+  {name:'NDB',        shortName:'NDB',        color:PALETTE[0], offersUrl:'https://www.ndbbank.com/cards/card-offers',
+   cards:['Visa Platinum','Visa Signature','Visa Infinite','Mastercard Platinum','Mastercard Signature']},
+  {name:'ComBank',    shortName:'ComBank',     color:PALETTE[1], offersUrl:'https://www.combank.lk/rewards-promotions',
+   cards:['Visa Classic','Visa Gold','Visa Platinum','Visa Signature','Visa Infinite','Mastercard Classic','Mastercard Gold','Mastercard Platinum','World Mastercard','UnionPay','JCB']},
+  {name:'Seylan',     shortName:'Seylan',      color:PALETTE[2], offersUrl:'https://www.seylan.lk/promotions/cards?type[]=credit_card',
+   cards:['Visa Classic','Visa Gold','Visa Platinum','World Mastercard']},
+  {name:'NTB',        shortName:'NTB',         color:PALETTE[3], offersUrl:'https://www.nationstrust.com/promotions',
+   cards:['World Mastercard','Platinum Mastercard','Private Banking Mastercard','Nations Shopping Card','Amex Magnet','Amex Explorer','Amex Gold','Amex Platinum','SriLankan Airlines Amex']},
+  {name:'BOC',        shortName:'BOC',         color:PALETTE[4], offersUrl:'https://www.boc.lk/personal-banking/card-offers',
+   cards:['Visa Classic','Visa Gold','Visa Platinum','Mastercard Titanium','World Mastercard','Corporate Card']},
+  {name:"People's",   shortName:"People's",    color:PALETTE[5], offersUrl:'https://www.peoplesbank.lk/special-offers/',
+   cards:['Visa Classic','Visa Gold','Visa Platinum','Visa Signature','Mastercard Classic','Mastercard Gold','Mastercard Platinum','Mastercard World','Vanitha Vasana']},
+  {name:'HNB',        shortName:'HNB',         color:PALETTE[6], offersUrl:'https://www.hnb.lk/card-promotion',
+   cards:['Visa Classic','Visa Gold','Visa Platinum','Visa Signature','Visa Infinite','Mastercard']},
+  {name:'DFCC',       shortName:'DFCC',        color:PALETTE[7], offersUrl:'https://www.dfcc.lk/cards/credit-card-offers',
+   cards:['Visa Platinum','Visa Signature','Visa Infinite','World Mastercard','Lanka IOC Mastercard','Affinity Card','Corporate Card']},
+  {name:'Sampath',    shortName:'Sampath',     color:PALETTE[8], offersUrl:'https://www.sampath.lk/sampath-cards/credit-card-offer',
+   cards:['Visa Classic','Visa Gold','Visa Platinum','Mastercard','Sampath Everyday Amex','UltraMiles','Corporate Card']},
+  {name:'Pan Asia',   shortName:'PanAsia',     color:PALETTE[9], offersUrl:'https://www.pabcbank.com/card-offers/',
+   cards:['World Mastercard','Black Mastercard','Gold Mastercard']},
+  {name:'Cargills',   shortName:'Cargills',    color:{l:'Crimson',bg:'#FDE9E9',t:'#C1121F'}, offersUrl:'https://www.cargillsbank.com/promotions',
+   cards:['Mastercard Ascend','Mastercard Gold','Mastercard Titanium','Mastercard Platinum']},
+  {name:'CDB',        shortName:'CDB',         color:{l:'Navy',bg:'#E8EDF8',t:'#1E3A6E'},    offersUrl:'https://www.cdb.lk/cdb-offers',
+   cards:['Standard','Gold','Titanium','Platinum','World']},
+  {name:'Standard Chartered',shortName:'SC',  color:{l:'Teal2',bg:'#E0F4F2',t:'#006D6B'},   offersUrl:'https://www.sc.com/lk/promotions/',
+   cards:['Rewards Card','Journey Card','Visa Infinite','SriLankan Airlines Platinum']},
+  {name:'Amex (NTB)', shortName:'Amex',        color:{l:'Blue2',bg:'#E6F0FB',t:'#006FCF'},   offersUrl:'https://www.americanexpress.lk/',
+   cards:['Magnet Card','Explorer Card','Gold Card','Platinum Card','Blue Card','SriLankan Airlines Platinum']},
+];
+
+const DEFAULT_MY_CARDS=[
+  {id:'ndb',  bankName:'NDB',     cardType:'Visa Signature',    color:PALETTE[0]},
+  {id:'com',  bankName:'ComBank', cardType:'Visa Platinum',     color:PALETTE[1]},
+  {id:'sey',  bankName:'Seylan',  cardType:'Visa Platinum',     color:PALETTE[2]},
+  {id:'ntb',  bankName:'NTB',     cardType:'World Mastercard',  color:PALETTE[3]},
+];
+
+const SEED=[
+  {id:101,bank:"NDB",cat:"Supermarket",title:"Cargills Food City \u2013 25% off Veg/Fruit/Seafood (Tuesdays)",desc:"25% savings on Fresh Vegetables, Fruits & Seafood. Credit Cards. 5th, 12th, 19th & 26th May 2026 (Tuesdays).",disc:"25% off",expiry:"2026-05-26",url:"https://www.ndbbank.com/cards/card-offers/offer-details/28"},
+  {id:102,bank:"NDB",cat:"Supermarket",title:"Cargills Food City \u2013 10% off Total Bill (27th May)",desc:"10% savings on total bill at Cargills Food City. All Credit Cards. 27th May 2026.",disc:"10% off",expiry:"2026-05-27",url:"https://www.ndbbank.com/cards/card-offers/offer-details/103"},
+  {id:103,bank:"NDB",cat:"Supermarket",title:"Softlogic Glomark \u2013 30% off Veg/Fruit/Fish/Meat",desc:"30% savings on Fresh Vegetables, Fruit, Fish & Meat. Credit Cards. 13th & 27th May 2026.",disc:"30% off",expiry:"2026-05-27",url:"https://www.ndbbank.com/cards/card-offers/offer-details/104"},
+  {id:104,bank:"NDB",cat:"Supermarket",title:"Keells Supermarket \u2013 25% off (Every Thursday)",desc:"25% savings on Fresh Vegetables, Fruits, Seafood & Fresh Meat for bills above Rs. 5,000. Every Thursday until 31st May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/29"},
+  {id:105,bank:"NDB",cat:"Dining",title:"CHEERS \u2013 Cinnamon Grand (25% off Food)",desc:"25% savings on food. Signature, Infinite & Privilege Banking Credit Cards. Tel: 0112 497 373. Until 31st May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/295"},
+  {id:106,bank:"NDB",cat:"Dining",title:"Nuga Gama \u2013 Cinnamon Grand (25% off Food)",desc:"25% savings on food. Signature, Infinite & Privilege Banking Credit Cards. Tel: 0117437437. Until 31st May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/41"},
+  {id:107,bank:"NDB",cat:"Dining",title:"Lagoon \u2013 Cinnamon Grand (25% off Food)",desc:"25% savings on food. Signature, Infinite & Privilege Banking Credit Cards. Tel: 0117437437. Until 31st May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/39"},
+  {id:108,bank:"NDB",cat:"Dining",title:"Plates \u2013 Cinnamon Grand (Free Buffet Weekends)",desc:"Cardholder dines FREE on Lunch & Dinner Buffet every Weekend. Privilege Select, Privilege Select Plus & Infinite Credit Cards only. Until 31st May 2026.",disc:"Free buffet",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/35"},
+  {id:109,bank:"NDB",cat:"Dining",title:"AYU \u2013 NH Collection Colombo (20% off Buffet)",desc:"20% savings on Lunch & Dinner Buffet. Credit Cards. Until 31st May 2026.",disc:"20% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/49"},
+  {id:110,bank:"NDB",cat:"Dining",title:"Adityaa \u2013 NH Collection Colombo (20% off Food)",desc:"20% savings on food. Credit Cards. Until 31st May 2026.",disc:"20% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/296"},
+  {id:111,bank:"NDB",cat:"Dining",title:"Thai Rasa \u2013 NH Collection Colombo (20% off Dinner Buffet)",desc:"20% savings on Dinner Buffet. Credit Cards. Tel: 0117 450 450. Until 31st May 2026.",disc:"20% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/434"},
+  {id:112,bank:"NDB",cat:"Dining",title:"Royal Thai \u2013 Cinnamon Lakeside (25% off Food)",desc:"25% savings on food. Signature, Infinite & Privilege Banking Credit Cards. Tel: 0112 491 945. Until 31st May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/303"},
+  {id:113,bank:"NDB",cat:"Dining",title:"The Dining Room \u2013 Cinnamon Lakeside (25% off Food)",desc:"25% savings on food. Privilege Banking, Infinite & Signature Credit Cards. Tel: 0112 491 930. Until 31st May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/433"},
+  {id:114,bank:"NDB",cat:"Dining",title:"Long Feng \u2013 Cinnamon Lakeside (25% off Food)",desc:"25% savings on food. Signature, Infinite & Privilege Banking Credit Cards. Until 31st May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/39"},
+  {id:115,bank:"NDB",cat:"Dining",title:"Kobe Japanese \u2013 WatersEdge (25% off Food)",desc:"25% savings for Signature/Infinite/Privilege; 20% for other Credit Cards. Tel: 0112863863. Until 31st May 2026.",disc:"20\u201325% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/42"},
+  {id:116,bank:"NDB",cat:"Dining",title:"Thuna Paha \u2013 WatersEdge (25% off Food)",desc:"25% savings for Signature/Infinite/Privilege; 20% for other Credit Cards. Tel: 0112863863. Until 31st May 2026.",disc:"20\u201325% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/32"},
+  {id:117,bank:"NDB",cat:"Dining",title:"Pranzo Italian \u2013 WatersEdge (25% off Buffet)",desc:"25% savings on International Dinner Buffet & Sunday Brunch for Signature/Infinite/Privilege; 20% for other Credit Cards. Tel: 0112863863. Until 31st May 2026.",disc:"20\u201325% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/34"},
+  {id:118,bank:"NDB",cat:"Dining",title:"1864 Limited Edition \u2013 Galle Face Hotel (up to 30% off)",desc:"30% savings for Signature/Infinite/Privilege Banking cards; 20% for other Credit Cards. Tel: 0117 541 010. Until 31st May 2026.",disc:"20\u201330% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/428"},
+  {id:119,bank:"NDB",cat:"Dining",title:"King of the Mambo \u2013 Galle Face Hotel (up to 30% off)",desc:"30% savings for Signature/Infinite/Privilege Banking cards; 20% for other Credit Cards. Tel: 0117 541 010. Until 31st May 2026.",disc:"20\u201330% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/430"},
+  {id:120,bank:"NDB",cat:"Dining",title:"The Travellers Bar \u2013 Galle Face Hotel (up to 30% off)",desc:"30% savings for Signature/Infinite/Privilege Banking cards; 20% for other Credit Cards. Tel: 0117 541 010. Until 31st May 2026.",disc:"20\u201330% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/432"},
+  {id:121,bank:"NDB",cat:"Dining",title:"Fire Beach \u2013 Galle Face Hotel (up to 30% off)",desc:"30% savings for Signature/Infinite/Privilege Banking cards; 20% for other Credit Cards. Tel: 0117 541 010. Until 31st May 2026.",disc:"20\u201330% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/429"},
+  {id:122,bank:"NDB",cat:"Dining",title:"The Verandah \u2013 Galle Face Hotel (up to 30% off)",desc:"30% savings for Signature/Infinite/Privilege Banking cards; 20% for other Credit Cards. Tel: 0117 541 010. Until 31st May 2026.",disc:"20\u201330% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/426"},
+  {id:123,bank:"NDB",cat:"Dining",title:"In\u2026 On The Green \u2013 Galle Face Hotel (up to 30% off)",desc:"30% savings for Signature/Infinite/Privilege Banking cards; 20% for other Credit Cards. Tel: 0117 541 010. Until 31st May 2026.",disc:"20\u201330% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/431"},
+  {id:124,bank:"NDB",cat:"Travel",title:"findmyfare.com \u2013 15% off Any Airline + Turkish Airlines 20%",desc:"Flat 15% savings on any destination (base fare). Up to 20% on Turkish Airlines with 0% instalment up to 36 months. Until 31st May 2026.",disc:"15\u201320% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/247"},
+  {id:125,bank:"NDB",cat:"Travel",title:"Uga Bay \u2013 Passikudah (45% off)",desc:"45% savings on reservations. Signature, Infinite & Privilege Banking Credit Cards. Booking & Travel: 15th March \u2013 30th June 2026.",disc:"45% off",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/420"},
+  {id:126,bank:"NDB",cat:"Travel",title:"Uga Prava \u2013 Tangalle (20% off)",desc:"20% savings on reservations. Signature, Infinite & Privilege Banking Credit Cards. Booking & Travel: 1st April \u2013 30th June 2026.",disc:"20% off",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/418"},
+  {id:127,bank:"NDB",cat:"Travel",title:"Anantaya Resorts & Spa \u2013 Chilaw (up to 50% off)",desc:"Up to 50% savings on reservation. Credit Cards. Until 31st May 2026.",disc:"Up to 50% off",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/343"},
+  {id:128,bank:"NDB",cat:"Travel",title:"Agoda \u2013 Complimentary 3rd Night (Visa Infinite)",desc:"Book on Agoda and enjoy a complimentary 3rd night when you stay 3 nights. Visa Infinite Cards. Until 31st December 2026.",disc:"Free 3rd night",expiry:"2026-12-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/365"},
+  {id:129,bank:"NDB",cat:"Travel",title:"Araliya Green Hills \u2013 Nuwara Eliya (25% off)",desc:"25% savings on reservations. Credit Cards. Tel: 0522 224 150. Until 31st July 2026.",disc:"25% off",expiry:"2026-07-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/337"},
+  {id:130,bank:"NDB",cat:"Travel",title:"Araliya Red \u2013 Nuwara Eliya (25% off)",desc:"25% savings on reservations. Credit Cards. Tel: 0522 226 000. Until 31st July 2026.",disc:"25% off",expiry:"2026-07-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/402"},
+  {id:131,bank:"NDB",cat:"Travel",title:"Luxor Kirindi Ella Resort & Spa (20% off + 10% Spa)",desc:"20% savings on BB reservations & 10% savings on Spa treatments. Credit Cards. Booking period: 10th Feb \u2013 31st July 2026.",disc:"20% + 10% Spa",expiry:"2026-07-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/403"},
+  {id:132,bank:"NDB",cat:"Travel",title:"Oak Ray Regency \u2013 Kandy (35% off)",desc:"35% savings on DBL/FB basis & 30% on TPL/FB basis. Credit Cards. Until 31st October 2026.",disc:"35% off",expiry:"2026-10-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/60"},
+  {id:133,bank:"NDB",cat:"Travel",title:"Oak Ray Serene Garden \u2013 Kandy (35% off)",desc:"35% savings on DBL/FB basis & 30% on TPL/FB basis. Credit Cards. Until 31st October 2026.",disc:"35% off",expiry:"2026-10-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/70"},
+  {id:134,bank:"NDB",cat:"Travel",title:"Oak Ray Heritage \u2013 Kandy (35% off)",desc:"35% savings on DBL/FB basis & 30% on TPL/FB basis. Credit Cards. Tel: 0812 203 070. Until 31st October 2026.",disc:"35% off",expiry:"2026-10-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/472"},
+  {id:135,bank:"NDB",cat:"Travel",title:"Rain Tree by Oak Ray \u2013 Thissamaramaya (35% off)",desc:"35% savings on DBL/FB basis & 30% on TPL/FB basis. Credit Cards. Until 31st October 2026.",disc:"35% off",expiry:"2026-10-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/71"},
+  {id:136,bank:"NDB",cat:"Travel",title:"Pelwehera Village Resort \u2013 Dambulla (35% off)",desc:"35% savings on DBL/FB basis & 30% on TPL/FB basis. Credit & Debit Cards. Until 31st October 2026.",disc:"35% off",expiry:"2026-10-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/58"},
+  {id:137,bank:"NDB",cat:"Travel",title:"Joes Resorts \u2013 Bentota (20% off)",desc:"20% savings on reservations. Tel: 0779594545 / 0112581132. Until 31st December 2026.",disc:"20% off",expiry:"2026-12-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/414"},
+  {id:138,bank:"NDB",cat:"Travel",title:"APA Villa \u2013 Thalpe (20% off BB/HB/FB)",desc:"20% savings on BB, HB & FB reservations. Credit & Debit Cards. Until 31st December 2026.",disc:"20% off",expiry:"2026-12-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/68"},
+  {id:139,bank:"NDB",cat:"Travel",title:"Visa \u2013 Explore Malaysia with Visa Offers",desc:"Explore Malaysia with exclusive Visa Offers. Visa Credit Cards. Until 31st August 2026.",disc:"Special deals",expiry:"2026-08-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/367"},
+  {id:140,bank:"NDB",cat:"Travel",title:"Visa \u2013 Unlock Premium Global Experiences",desc:"Exclusive global lifestyle privileges for Visa Signature & Infinite Credit Cardholders.",disc:"Exclusive perks",expiry:"2026-12-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/379"},
+  {id:141,bank:"NDB",cat:"Instalment",title:"Anything Anywhere \u2013 25M 0% Plan (Every Thursday)",desc:"Special 25 months 0% instalment plan. Platinum, Signature & Infinite Credit Cards. Every Thursday 7th May \u2013 25th June 2026.",disc:"0% for 25M",expiry:"2026-06-25",url:"https://www.ndbbank.com/cards/card-offers/offer-details/76"},
+  {id:142,bank:"NDB",cat:"Instalment",title:"Hospital, Insurance & Auto Mobile \u2013 0% up to 12M",desc:"Up to 12 months 0% instalment plans on Hospital, Insurance & Auto Mobile Services. Until 30th June 2026.",disc:"0% for 12M",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/25"},
+  {id:143,bank:"NDB",cat:"Instalment",title:"Education \u2013 0% instalment up to 36M",desc:"Up to 36 months 0% instalment plans on any educational payments. Platinum, Signature & Infinite Credit Cards. Until 30th June 2026.",disc:"0% for 36M",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/316"},
+  {id:144,bank:"NDB",cat:"Instalment",title:"Wimaladharma & Sons \u2013 0% up to 12M (Call & Convert)",desc:"0% instalment plans up to 12 months (Call & Convert). Tel: 0112 502 277. Until 30th June 2026.",disc:"0% for 12M",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/257"},
+  {id:145,bank:"NDB",cat:"Instalment",title:"SriLankan Airlines \u2013 0% instalment up to 36M",desc:"0% instalment plans up to 36 months on SriLankan Airlines. Credit Cards. Tel: 0117 77 1979. Until 30th June 2026.",disc:"0% for 36M",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/239"},
+  {id:146,bank:"NDB",cat:"Instalment",title:"Toyota Lanka \u2013 0% instalment 12M",desc:"0% instalment plans for 12 months at Toyota Lanka. Credit Cards. Tel: 0112 939 000. Until 30th June 2026.",disc:"0% for 12M",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/327"},
+  {id:147,bank:"NDB",cat:"Shopping",title:"Raja Jewellers \u2013 0% instalment up to 36M",desc:"Up to 36 months 0% instalment plans. Credit Cards. Tel: 0112 586 949. Until 30th June 2026.",disc:"0% for 36M",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/259"},
+  {id:148,bank:"NDB",cat:"Shopping",title:"Aminra Jewellers \u2013 up to 35% off + 0% 36M",desc:"Up to 35% savings on Diamond Jewellery, 30% on Colour Stones, 15% on Stone Studded Jewellery with up to 36 months 0% instalment plans. Until 30th June 2026.",disc:"Up to 35% off",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/260"},
+  {id:149,bank:"NDB",cat:"Fuel",title:"Fuel Surcharge Rebate \u2013 Signature & Infinite Cards",desc:"Fuel up with 0% surcharge for Signature & Infinite Credit Cardholders island-wide. Until 31st May 2026.",disc:"0% surcharge",expiry:"2026-05-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/77"},
+  {id:150,bank:"NDB",cat:"Health",title:"Vision Care \u2013 12M 0% instalment",desc:"12 months 0% instalment plans at Vision Care outlets. Credit Cards. Until 30th June 2026.",disc:"0% for 12M",expiry:"2026-06-30",url:"https://www.ndbbank.com/cards/card-offers/offer-details/273"},
+  {id:151,bank:"NDB",cat:"Health",title:"Siddhalepa Clinic \u2013 15% off bills over Rs. 10,000",desc:"15% discount for bills over Rs 10,000. Credit Cards. Tel: 0112 082 535. Until 31st December 2026.",disc:"15% off",expiry:"2026-12-31",url:"https://www.ndbbank.com/cards/card-offers/offer-details/441"},
+  {id:200,bank:"ComBank",cat:"Travel",title:"Seasonal Offer \u2013 up to 65% off Travel & Leisure",desc:"Up to 65% off on Travel & Leisure. ComBank credit cards. Valid till 31st May 2026.",disc:"Up to 65% off",expiry:"2026-05-31",url:"https://www.combank.lk/rewards-promotions"},
+  {id:201,bank:"ComBank",cat:"Travel",title:"Seasonal Offer \u2013 up to 45% off Hotels",desc:"Up to 45% off on hotel stays at partner properties. ComBank credit cards. Valid till 31st May 2026.",disc:"Up to 45% off",expiry:"2026-05-31",url:"https://www.combank.lk/rewards-promotions"},
+  {id:202,bank:"ComBank",cat:"Shopping",title:"Seasonal Offer \u2013 up to 30% off Fashion & Retail",desc:"Up to 30% off at partner retail & fashion outlets. ComBank credit cards. Valid till 31st May 2026.",disc:"Up to 30% off",expiry:"2026-05-31",url:"https://www.combank.lk/rewards-promotions"},
+  {id:203,bank:"ComBank",cat:"Dining",title:"Food & Restaurants \u2013 up to 35% off",desc:"Up to 35% off at partner restaurants and dining outlets. ComBank credit cards. Valid till 31st May 2026.",disc:"Up to 35% off",expiry:"2026-05-31",url:"https://www.combank.lk/rewards-promotions"},
+  {id:204,bank:"ComBank",cat:"Dining",title:"Food & Restaurants \u2013 up to 20% off (multiple outlets)",desc:"Up to 20% off at partner dining outlets. ComBank credit cards. Valid till 31st May 2026.",disc:"Up to 20% off",expiry:"2026-05-31",url:"https://www.combank.lk/rewards-promotions"},
+  {id:205,bank:"ComBank",cat:"Dining",title:"Food & Restaurants \u2013 up to 15% off",desc:"Up to 15% off at partner restaurants. ComBank credit cards. Valid till 30th June 2026.",disc:"Up to 15% off",expiry:"2026-06-30",url:"https://www.combank.lk/rewards-promotions"},
+  {id:206,bank:"ComBank",cat:"Health",title:"Healthcare \u2013 special discounts",desc:"Special healthcare discounts at partner hospitals and clinics with ComBank credit cards.",disc:"Special rates",expiry:"2026-06-30",url:"https://www.combank.lk/rewards-promotions"},
+  {id:207,bank:"ComBank",cat:"Instalment",title:"0% Easy Payment Plans at partner merchants",desc:"Convert purchases at partner merchants to 0% interest instalments. Platinum card eligible. Until 31st December 2026.",disc:"0% interest",expiry:"2026-12-31",url:"https://www.combank.lk/rewards-promotions"},
+  {id:208,bank:"ComBank",cat:"Online",title:"Online Shopping \u2013 exclusive discounts",desc:"Exclusive savings when shopping online with ComBank credit cards at partner e-commerce platforms.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.combank.lk/rewards-promotions"},
+  {id:209,bank:"ComBank",cat:"Rewards",title:"Max Loyalty Rewards \u2013 redeem for flights, hotels & more",desc:"Redeem ComBank Max Loyalty Rewards points for hotel bookings, online shopping, flight bookings and more.",disc:"Rewards points",expiry:"2026-12-31",url:"https://maxrewards.combank.net"},
+  {id:300,bank:"Seylan",cat:"Shopping",title:"Flat 25% OFF sitewide \u2013 multiple partner retailers",desc:"Flat 25% off at participating retailers with your Seylan Credit Cards. Until 25th May 2026.",disc:"25% off",expiry:"2026-05-26",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:301,bank:"Seylan",cat:"Supermarket",title:"SPAR \u2013 25% off Veg/Fruit/Seafood/Meat (Fridays)",desc:"25% off on Fresh Vegetables, Fruits, Seafood & Meat every Friday. Seylan Credit Cardholders. Min bill Rs.6,000. Max discount Rs.1,500. Until April 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/supermarket/spar"},
+  {id:302,bank:"Seylan",cat:"Supermarket",title:"Keells \u2013 20% off Total Bill (Saturdays, Visa Signature & World MC)",desc:"20% savings on total bill at Keells. Seylan Visa Signature & World Mastercard Credit Cards. Saturdays only. Min bill Rs. 15,000. Max discount Rs.3,000. Until 30th May 2026.",disc:"20% off",expiry:"2026-05-30",url:"https://www.seylan.lk/promotions/cards/supermarket/keells-seylan-premier-credit-cards"},
+  {id:303,bank:"Seylan",cat:"Supermarket",title:"Keells \u2013 10% off Total Bill (Saturdays, Visa Gold/Platinum)",desc:"10% off on total bill every Saturday. Seylan Visa Gold, Platinum & Mastercard Titanium Credit Cards. Min bill Rs. 8,000. Max discount Rs.1,000. Until April 2026.",disc:"10% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/supermarket/keells"},
+  {id:304,bank:"Seylan",cat:"Supermarket",title:"Keells \u2013 30% off Total Bill (Saturdays, Visa Infinite)",desc:"30% off on Total Bill every Saturday with Seylan Visa Infinite Credit Card. Limited dates. Until May 2026.",disc:"30% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/supermarket"},
+  {id:305,bank:"Seylan",cat:"Dining",title:"UP TO 30% OFF at Seylan Premier Card partner restaurants",desc:"Up to 30% off dining for Seylan Premier cardholders (Visa Signature & World Mastercard) at partner restaurants. Until 31st May 2026.",disc:"Up to 30% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/dining"},
+  {id:306,bank:"Seylan",cat:"Dining",title:"10% off Total Bill at partner restaurants (Credit & Debit)",desc:"10% off on total bill for Seylan Credit & Debit Cards at partner restaurants. Until May 2026.",disc:"10% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/dining"},
+  {id:307,bank:"Seylan",cat:"Dining",title:"20% off Every Monday at Softlogic Branded Restaurants",desc:"20% off every Monday at Softlogic branded restaurants with Seylan Cards. Until May 2026.",disc:"20% off Mondays",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/dining"},
+  {id:308,bank:"Seylan",cat:"Dining",title:"25% off Dining + 20% off Delivery \u2013 Seylan Credit Cards",desc:"25% off on Dining & 20% off on Delivery for Seylan Credit Cardholders at partner outlets. Until May 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/dining"},
+  {id:309,bank:"Seylan",cat:"Travel",title:"UP TO 30% off Room Rates \u2013 Seylan Cards",desc:"Up to 30% off on room rates at selected partner hotels and resorts with Seylan Cards. Until 30th June 2026.",disc:"Up to 30% off",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards/local-travel"},
+  {id:310,bank:"Seylan",cat:"Travel",title:"Anantaya Resorts & Spa \u2013 UP TO 50% OFF",desc:"Up to 50% OFF at Anantaya Resorts & Spa \u2013 Chilaw & Pasikudah with Seylan Cards. Until 31st May 2026.",disc:"Up to 50% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/local-travel"},
+  {id:311,bank:"Seylan",cat:"Travel",title:"Classic Travel \u2013 Singapore & Indonesia Package",desc:"Singapore & Indonesia tour package. Starting from LKR 175,500 per person (double occupancy). Book before 30th April 2026. Travel until 30th June 2026. 0% instalment plans up to 12M with Seylan Credit Cards.",disc:"0% EPP 12M",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards/travel/seylan-cards-partnering-with-classic-travel"},
+  {id:312,bank:"Seylan",cat:"Travel",title:"Kenya Safari \u2013 Maasai Mara (5 nights) with Seylan Cards",desc:"Kenya Safari to Maasai Mara \u2013 5-night African wilderness experience with Seylan Cards. Until 30th June 2026.",disc:"Special rates",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:313,bank:"Seylan",cat:"Travel",title:"Unlimited Lounge Visits \u2013 Seylan Visa Infinite",desc:"Unlimited lounge visits for Seylan Visa Infinite Cardholders at partner airport lounges.",disc:"Free lounge access",expiry:"2026-12-31",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:314,bank:"Seylan",cat:"Shopping",title:"Cinnamon DISCOVERY \u2013 Visa Signature & World MC upgrade",desc:"Upgrade Cinnamon DISCOVERY Loyalty experience with Visa Signature & World Mastercard Cards and enjoy seasonal privileges. Until 30th June 2026.",disc:"Special perks",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:315,bank:"Seylan",cat:"Shopping",title:"House of Fashions \u2013 25% off (Credit Cards)",desc:"25% off with Seylan Credit Cards at House of Fashions. Valid on 21st March & 4th April 2026. Max transaction Rs.30,000. One transaction per card.",disc:"25% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/style/house-of-fashions"},
+  {id:316,bank:"Seylan",cat:"Shopping",title:"Fashion & Clothing \u2013 up to 30% off (multiple stores)",desc:"Up to 30% off at partner clothing & fashion retailers with Seylan Credit Cards. Until May 2026.",disc:"Up to 30% off",expiry:"2026-05-31",url:"https://www.seylan.lk/promotions/cards/style"},
+  {id:317,bank:"Seylan",cat:"Health",title:"25% off Health Checks + 0% EPP 12M",desc:"25% off health check packages with easy payment plans up to 12 months. Seylan Credit Cards. Until 30th June 2026.",disc:"25% off",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:318,bank:"Seylan",cat:"Health",title:"20% off Hearing Aids + 0% EPP 12M",desc:"Up to 20% off on Hearing Aids with 0% instalment plans up to 12 months. Seylan Credit Cards. Until 30th June 2026.",disc:"20% off",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:319,bank:"Seylan",cat:"Health",title:"Le Lily Signature Spa \u2013 Executive Reset Collection",desc:"Special discounts on Le Lily Signature Spa Executive Reset Collection with Seylan Cards. Until 30th June 2026.",disc:"Special rate",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:320,bank:"Seylan",cat:"Instalment",title:"0% Instalment Plans up to 36M + up to 40% off selected items",desc:"Up to 40% off on selected items with 0% instalment plans up to 36 months at selected merchants. Seylan Credit Cards. Until 31st July 2026.",disc:"0% for 36M",expiry:"2026-07-31",url:"https://www.seylan.lk/promotions/cards?type[]=credit_card"},
+  {id:321,bank:"Seylan",cat:"Other",title:"Auto \u2013 30% off Lubricant Services (BMW/Land Rover/Porsche)",desc:"30% off on lubricant services at premium auto brands (BMW, Land Rovers, Porsche, Mini, Jaguar) with 0% instalment plans. Seylan Credit Cards.",disc:"30% off + 0% EPP",expiry:"2026-06-30",url:"https://www.seylan.lk/promotions/cards/auto"},
+  {id:322,bank:"Seylan",cat:"Instalment",title:"Insurance \u2013 0% EPP 3M/6M/12M with processing fee",desc:"0%, 3M, 6M & 12M instalment plans available for insurance payments with processing fee. Seylan Credit Cards.",disc:"0% EPP available",expiry:"2026-12-31",url:"https://www.seylan.lk/promotions/cards/insurance"},
+  {id:400,bank:"NTB",cat:"Dining",title:"Butlers Restaurant \u2013 20% off (dine-in)",desc:"20% savings with NTB World Mastercard. Valid for dine-in on \u00e0 la carte menu. Until 30th June 2026.",disc:"20% off",expiry:"2026-06-30",url:"https://www.nationstrust.com/promotions/dining"},
+  {id:401,bank:"NTB",cat:"Dining",title:"Waters Edge (Boardwalk/Diyatha/KOBE) \u2013 20% off",desc:"20% savings on food with NTB Mastercard. Max savings LKR 10,000 per transaction. Excluding festive days. Until 31st May 2026.",disc:"20% off",expiry:"2026-05-31",url:"https://www.nationstrust.com/promotions/dining"},
+  {id:402,bank:"NTB",cat:"Dining",title:"Pizza Hut \u2013 Buy 1 Get 1 Large Pizza (28th May only)",desc:"Buy one Large Pizza, get one Large Delight Pizza free. Valid 28th May 2026 only. Dine-in, takeaway & delivery.",disc:"Buy 1 Get 1",expiry:"2026-05-28",url:"https://www.nationstrust.com/promotions/dining"},
+  {id:403,bank:"NTB",cat:"Dining",title:"Great Wall Restaurant \u2013 20% off (min LKR 3,000)",desc:"20% savings with NTB Mastercard. Valid on bills above LKR 3,000. Until 30th June 2026.",disc:"20% off",expiry:"2026-06-30",url:"https://www.nationstrust.com/promotions/dining"},
+  {id:404,bank:"NTB",cat:"Dining",title:"Red Orchids Restaurant \u2013 15% off (dine-in, min LKR 5,000)",desc:"15% savings with NTB Mastercard. Dine-in only, bills above LKR 5,000. Max savings LKR 4,500. Until 31st May 2026.",disc:"15% off",expiry:"2026-05-31",url:"https://www.nationstrust.com/promotions/dining"},
+  {id:405,bank:"NTB",cat:"Dining",title:"Arabian Knights \u2013 15% off (dine-in & takeaway)",desc:"15% savings with NTB Mastercard Credit Card. Valid for dine-in and takeaway. Until 30th May 2026.",disc:"15% off",expiry:"2026-05-30",url:"https://www.nationstrust.com/promotions/dining"},
+  {id:406,bank:"NTB",cat:"Dining",title:"COCO Bar Colombo \u2013 up to 10% off",desc:"Up to 10% savings with NTB Mastercard Credit & Debit Cards. Until 1st July 2026.",disc:"Up to 10% off",expiry:"2026-07-01",url:"https://www.nationstrust.com/promotions/dining"},
+  {id:407,bank:"NTB",cat:"Travel",title:"Exclusive hotel savings \u2013 NTB World Mastercard",desc:"Enjoy exclusive savings on your next hotel stay with NTB Mastercard cards. Until 30th June 2026.",disc:"Special rates",expiry:"2026-06-30",url:"https://www.nationstrust.com/promotions/hotels-resorts"},
+  {id:408,bank:"NTB",cat:"Online",title:"Online shopping exclusive deals \u2013 NTB World Mastercard",desc:"Exclusive savings when shopping online with NTB Mastercard cards. Until 30th June 2026.",disc:"Savings",expiry:"2026-06-30",url:"https://www.nationstrust.com/promotions/online"},
+  {id:409,bank:"NTB",cat:"Instalment",title:"0% instalment at partner merchants \u2013 World Mastercard",desc:"0% instalment plans at a range of merchant partners island-wide with NTB World Mastercard. Until 31st August 2026.",disc:"0% interest",expiry:"2026-08-31",url:"https://www.nationstrust.com/promotions/other"},
+  {id:500,bank:"BOC",cat:"Supermarket",title:"Keells Supermarket \u2013 25% off Keells Own Branded Products",desc:"25% off on Keells Own Branded Products for BOC Credit Cards. Valid on selected days. Min. bill Rs.4,000. Offer not valid for liquor, tobacco, gift vouchers, utility bills, pharmaceuticals.",disc:"25% off",expiry:"2026-05-31",url:"https://www.boc.lk/personal-banking/card-offers/supermarkets/keells/product"},
+  {id:501,bank:"BOC",cat:"Supermarket",title:"Cargills Food City \u2013 25% off Veg/Fruit/Seafood",desc:"25% off on Fresh Vegetables, Fruits & Seafood for BOC Credit Cardholders. Min. bill Rs.4,000. Max discount Rs.1,000. Selected dates in March & April 2026.",disc:"25% off",expiry:"2026-05-31",url:"https://www.boc.lk/personal-banking/card-offers/supermarkets/cargills-food-city/product"},
+  {id:502,bank:"BOC",cat:"Supermarket",title:"Arpico Supermarket \u2013 30% off Veg/Fruit/Seafood/Meat",desc:"30% off on Fresh Vegetables, Fruits, Seafood & Meat for BOC Credit Cards. Min. bill Rs.10,000. Max discount Rs.2,000.",disc:"30% off",expiry:"2026-06-30",url:"https://www.boc.lk/personal-banking/card-offers/supermarkets/arpico-supermarket/product"},
+  {id:503,bank:"BOC",cat:"Instalment",title:"Education Payments \u2013 0% EPP up to 24M",desc:"0% interest instalment plans available for up to 24 months on any education payments for BOC Credit Cardholders. From 20th March 2026 to 20th September 2026. Transaction amount over Rs.50,000.",disc:"0% for 24M",expiry:"2026-09-20",url:"https://www.boc.lk/personal-banking/card-offers/zero-plans/education/product"},
+  {id:504,bank:"BOC",cat:"Instalment",title:"Hospital Payments \u2013 0% EPP up to 24M",desc:"0% interest instalment plans available for up to 24 months on any hospital payments for BOC Credit Cardholders.",disc:"0% for 24M",expiry:"2026-12-31",url:"https://www.boc.lk/personal-banking/card-offers/zero-plans/hospital/product"},
+  {id:505,bank:"BOC",cat:"Instalment",title:"Automobile Payments \u2013 0% EPP up to 24M",desc:"0% interest instalment plans available for up to 24 months on any automobile payments for BOC Credit Cardholders.",disc:"0% for 24M",expiry:"2026-12-31",url:"https://www.boc.lk/personal-banking/card-offers/zero-plans/automobile/product"},
+  {id:506,bank:"BOC",cat:"Instalment",title:"Insurance Payments \u2013 0% EPP up to 24M",desc:"0% interest instalment plans available for up to 24 months on any insurance payments for BOC Credit Cardholders.",disc:"0% for 24M",expiry:"2026-12-31",url:"https://www.boc.lk/personal-banking/card-offers/zero-plans/insurance/product"},
+  {id:507,bank:"BOC",cat:"Instalment",title:"Home Appliances \u2013 0% EPP up to 24M",desc:"0% interest instalment plans available for up to 24 months on any home appliance payments for BOC Credit Cardholders.",disc:"0% for 24M",expiry:"2026-12-31",url:"https://www.boc.lk/personal-banking/card-offers/zero-plans/home-appliances/product"},
+  {id:508,bank:"BOC",cat:"Instalment",title:"Solar Payments \u2013 0% EPP up to 24M",desc:"0% interest instalment plans available for up to 24 months on any solar payments for BOC Credit Cardholders.",disc:"0% for 24M",expiry:"2026-12-31",url:"https://www.boc.lk/personal-banking/card-offers/zero-plans/solar/product"},
+  {id:509,bank:"BOC",cat:"Travel",title:"Anantaya Resort & Spa \u2013 special rates",desc:"Special BOC credit card rates at Anantaya Resort & Spa island-wide properties.",disc:"Special rates",expiry:"2026-06-30",url:"https://www.boc.lk/personal-banking/card-offers/travel-and-leisure/anantaya-resort-spa/product"},
+  {id:510,bank:"BOC",cat:"Travel",title:"Melheim Resorts & Spas \u2013 special hotel rates",desc:"Special BOC credit card room rates at Melheim Resorts & Spas.",disc:"Special rates",expiry:"2026-06-30",url:"https://www.boc.lk/personal-banking/card-offers/travel-and-leisure/melheim-resorts-spas/product"},
+  {id:511,bank:"BOC",cat:"Travel",title:"The Golden Ridge Hotel \u2013 special rates",desc:"Special BOC credit card rates at The Golden Ridge Hotel.",disc:"Special rates",expiry:"2026-06-30",url:"https://www.boc.lk/personal-banking/card-offers/travel-and-leisure/the-golden-ridge-hotel/product"},
+  {id:512,bank:"BOC",cat:"Travel",title:"Hotel Sudu Araliya \u2013 special rates",desc:"Special BOC credit card rates at Hotel Sudu Araliya.",disc:"Special rates",expiry:"2026-06-30",url:"https://www.boc.lk/personal-banking/card-offers/travel-and-leisure/hotel-sudu-araliya/product"},
+  {id:513,bank:"BOC",cat:"Dining",title:"Dining at partner restaurants \u2013 special discounts",desc:"Special dining discounts at partner restaurants with BOC Credit Cards. Until 30th May 2026.",disc:"Special rates",expiry:"2026-05-31",url:"https://www.boc.lk/personal-banking/card-offers/dining"},
+  {id:514,bank:"BOC",cat:"Shopping",title:"Fashion & Retail \u2013 discounts at partner stores",desc:"Exclusive discounts at partner fashion and retail stores with BOC Credit Cards.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.boc.lk/personal-banking/card-offers/fashion"},
+  {id:600,bank:"People's",cat:"Dining",title:"Dining privileges at partner restaurants island-wide",desc:"People's Bank Visa Platinum & Mastercard World holders get dining discounts at selected restaurants island-wide. Until 30th June 2026.",disc:"Up to 20% off",expiry:"2026-06-30",url:"https://www.peoplesbank.lk/special-offers/"},
+  {id:601,bank:"People's",cat:"Travel",title:"Hotel booking discounts \u2013 Platinum & World MC",desc:"Exclusive hotel rates for People's Bank Visa Platinum & Mastercard World cardholders at partner hotels. Until 30th June 2026.",disc:"Up to 30% off",expiry:"2026-06-30",url:"https://www.peoplesbank.lk/special-offers/"},
+  {id:602,bank:"People's",cat:"Instalment",title:"0% easy payment plans at partner merchants",desc:"0% interest instalment plans at selected merchants for People's Bank credit cardholders. Until 31st December 2026.",disc:"0% interest",expiry:"2026-12-31",url:"https://www.peoplesbank.lk/special-offers/"},
+  {id:603,bank:"People's",cat:"Shopping",title:"Seasonal shopping & lifestyle deals",desc:"Exclusive discounts at partner retailers for People's Bank Visa Platinum & World Mastercard. Until 30th June 2026.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.peoplesbank.lk/special-offers/"},
+  {id:604,bank:"People's",cat:"Health",title:"Healthcare discounts at partner hospitals",desc:"Special healthcare discounts for People's Bank credit cardholders at partner hospitals and clinics.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.peoplesbank.lk/special-offers/"},
+  {id:700,bank:"HNB",cat:"Dining",title:"Restaurant dining discounts \u2013 Platinum & Signature",desc:"HNB Visa Platinum & Signature cardholders enjoy discounts at partner dining outlets island-wide. Until 30th June 2026.",disc:"Up to 20% off",expiry:"2026-06-30",url:"https://www.hnb.lk/card-promotion"},
+  {id:701,bank:"HNB",cat:"Travel",title:"Hotel & travel deals \u2013 Platinum, Signature & Infinite",desc:"Exclusive hotel rates and travel deals for HNB Visa Platinum, Signature & Infinite cardholders. Until 30th June 2026.",disc:"Up to 40% off",expiry:"2026-06-30",url:"https://www.hnb.lk/card-promotion"},
+  {id:702,bank:"HNB",cat:"Shopping",title:"Retail shopping offers \u2013 Platinum & above",desc:"Special discounts at partner retail stores for HNB Visa Platinum and above cardholders. Until 30th June 2026.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.hnb.lk/card-promotion"},
+  {id:703,bank:"HNB",cat:"Instalment",title:"0% instalment plans up to 24M \u2013 Platinum & above",desc:"0% interest instalment plans up to 24 months at selected merchants. HNB Visa Platinum & above eligible. Until 31st December 2026.",disc:"0% for 24M",expiry:"2026-12-31",url:"https://www.hnb.lk/card-promotion"},
+  {id:704,bank:"HNB",cat:"Health",title:"Healthcare & wellness discounts",desc:"Exclusive healthcare and wellness discounts for HNB credit cardholders at partner facilities. Until 30th June 2026.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.hnb.lk/card-promotion"},
+  {id:800,bank:"DFCC",cat:"Dining",title:"Dining lifestyle privileges \u2013 Platinum, Signature & Infinite",desc:"DFCC Visa Platinum, Signature & Infinite cardholders enjoy exclusive dining discounts at partner restaurants. Until 30th June 2026.",disc:"Up to 25% off",expiry:"2026-06-30",url:"https://www.dfcc.lk/cards/credit-card-offers"},
+  {id:801,bank:"DFCC",cat:"Travel",title:"Hotel & lifestyle offers \u2013 Visa Infinite & Signature",desc:"Exclusive hotel rates and lifestyle benefits for DFCC Visa Infinite & Signature cardholders. Until 30th June 2026.",disc:"Up to 50% off",expiry:"2026-06-30",url:"https://www.dfcc.lk/cards/credit-card-offers"},
+  {id:802,bank:"DFCC",cat:"Fuel",title:"Lanka IOC fuel savings \u2013 Co-Branded Mastercard",desc:"Special fuel savings for Lanka IOC Co-Branded Mastercard holders at IOC fuel stations island-wide.",disc:"Special rate",expiry:"2026-12-31",url:"https://www.dfcc.lk/cards/credit-card-offers"},
+  {id:803,bank:"DFCC",cat:"Instalment",title:"0% instalment up to 36M \u2013 Platinum & above",desc:"0% instalment plans up to 36 months at partner merchants for DFCC Visa Platinum and above. Until 31st December 2026.",disc:"0% for 36M",expiry:"2026-12-31",url:"https://www.dfcc.lk/cards/credit-card-offers"},
+  {id:804,bank:"DFCC",cat:"Shopping",title:"Shopping & lifestyle discounts \u2013 all credit cards",desc:"Special discounts at partner retail and lifestyle outlets for DFCC credit cardholders. Until 30th June 2026.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.dfcc.lk/cards/credit-card-offers"},
+  {id:900,bank:"Sampath",cat:"Rewards",title:"UltraMiles \u2013 earn airline miles on every spend",desc:"Earn miles on every spend with Sampath UltraMiles Visa card. Redeem for flights, upgrades and more.",disc:"Miles rewards",expiry:"2026-12-31",url:"https://www.sampath.lk/sampath-cards/credit-card-offer"},
+  {id:901,bank:"Sampath",cat:"Dining",title:"Dining discounts at partner restaurants",desc:"Sampath Visa Platinum & Amex Everyday cardholders get dining savings at partner restaurants island-wide. Until 30th June 2026.",disc:"Up to 20% off",expiry:"2026-06-30",url:"https://www.sampath.lk/sampath-cards/credit-card-offer"},
+  {id:902,bank:"Sampath",cat:"Travel",title:"Hotel special rates \u2013 Visa Platinum & UltraMiles",desc:"Exclusive hotel savings for Sampath Visa Platinum & UltraMiles cardholders at partner hotels. Until 30th June 2026.",disc:"Up to 40% off",expiry:"2026-06-30",url:"https://www.sampath.lk/sampath-cards/credit-card-offer"},
+  {id:903,bank:"Sampath",cat:"Instalment",title:"0% instalment plans up to 36M \u2013 Visa Platinum & above",desc:"0% interest instalment plans at selected merchants for Sampath Visa Platinum and above. Until 31st December 2026.",disc:"0% for 36M",expiry:"2026-12-31",url:"https://www.sampath.lk/sampath-cards/credit-card-offer"},
+  {id:904,bank:"Sampath",cat:"Shopping",title:"Shopping & lifestyle offers \u2013 Platinum & Everyday Amex",desc:"Special discounts at partner retail and lifestyle outlets for Sampath credit cardholders. Until 30th June 2026.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.sampath.lk/sampath-cards/credit-card-offer"},
+  {id:1000,bank:"Pan Asia",cat:"Shopping",title:"Retail shopping discounts \u2013 World & Black Mastercard",desc:"Pan Asia World Mastercard & Black Mastercard holders enjoy discounts at partner retail stores. Until 30th June 2026.",disc:"Up to 15% off",expiry:"2026-06-30",url:"https://www.pabcbank.com/card-offers/"},
+  {id:1001,bank:"Pan Asia",cat:"Dining",title:"Dining offers \u2013 World Mastercard",desc:"Pan Asia World Mastercard cardholders enjoy special dining discounts at partner restaurants. Until 30th June 2026.",disc:"Up to 15% off",expiry:"2026-06-30",url:"https://www.pabcbank.com/card-offers/"},
+  {id:1002,bank:"Pan Asia",cat:"Instalment",title:"0% instalment plans \u2013 World & Black Mastercard",desc:"0% interest instalment plans at partner merchants for Pan Asia World & Black Mastercard. Until 31st December 2026.",disc:"0% interest",expiry:"2026-12-31",url:"https://www.pabcbank.com/card-offers/"},
+  {id:1100,bank:"Cargills",cat:"Supermarket",title:"Cargills Food City \u2013 exclusive savings (Platinum & Ascend)",desc:"Cargills Bank Platinum & Ascend cardholders enjoy exclusive savings at Cargills Food City outlets island-wide. Until 30th June 2026.",disc:"Up to 10% off",expiry:"2026-06-30",url:"https://www.cargillsbank.com/promotions"},
+  {id:1101,bank:"Cargills",cat:"Shopping",title:"Retail & lifestyle deals \u2013 all credit cards",desc:"Cargills Bank credit cardholders enjoy special rates at partner retail and lifestyle merchants. Until 30th June 2026.",disc:"Discounts",expiry:"2026-06-30",url:"https://www.cargillsbank.com/promotions"},
+  {id:1102,bank:"Cargills",cat:"Instalment",title:"0% instalment plans \u2013 Platinum & Ascend",desc:"0% interest instalment plans at selected merchants for Cargills Bank Platinum & Ascend cards. Until 31st December 2026.",disc:"0% interest",expiry:"2026-12-31",url:"https://www.cargillsbank.com/promotions"},
+  {id:1200,bank:"CDB",cat:"Shopping",title:"Shopping & lifestyle offers \u2013 Platinum & World",desc:"CDB Platinum & World credit cardholders enjoy discounts at partner retail and lifestyle outlets. Until 30th June 2026.",disc:"Up to 20% off",expiry:"2026-06-30",url:"https://www.cdb.lk/cdb-offers"},
+  {id:1201,bank:"CDB",cat:"Dining",title:"Dining discounts \u2013 Platinum & World",desc:"CDB Platinum & World cardholders get dining privileges at partner restaurants. Until 30th June 2026.",disc:"Up to 15% off",expiry:"2026-06-30",url:"https://www.cdb.lk/cdb-offers"},
+  {id:1202,bank:"CDB",cat:"Instalment",title:"0% instalment plans \u2013 Titanium, Platinum & World",desc:"0% interest instalment plans at selected merchants for CDB Titanium, Platinum & World cards. Until 31st December 2026.",disc:"0% interest",expiry:"2026-12-31",url:"https://www.cdb.lk/cdb-offers"},
+  {id:1300,bank:"Standard Chartered",cat:"Travel",title:"SriLankan Airlines \u2013 FlySmiLes miles & upgrades",desc:"Earn FlySmiLes miles on every spend with SC SriLankan Airlines Platinum Card. Redeem for flights & upgrades.",disc:"Miles rewards",expiry:"2026-12-31",url:"https://www.sc.com/lk/promotions/"},
+  {id:1301,bank:"Standard Chartered",cat:"Rewards",title:"360\u00b0 Rewards Programme \u2013 Journey & Rewards cards",desc:"Earn 360\u00b0 Reward Points on every spend with SC Journey & Rewards cards. Redeem for vouchers, flights and more.",disc:"Points rewards",expiry:"2026-12-31",url:"https://www.sc.com/lk/promotions/360-rewards/"},
+  {id:1302,bank:"Standard Chartered",cat:"Travel",title:"The Good Life Privileges \u2013 Visa Infinite & Priority Banking",desc:"Exclusive travel and lifestyle privileges for SC Visa Infinite & Priority Banking cardholders.",disc:"Exclusive perks",expiry:"2026-12-31",url:"https://www.sc.com/lk/promotions/the-good-life-privileges/"},
+  {id:1303,bank:"Standard Chartered",cat:"Instalment",title:"Easy Settlement Plan \u2013 convert purchases to low-rate EPP",desc:"Convert purchases to low-rate instalment plans with SC Easy Settlement Plan for all credit cards.",disc:"Low rate EPP",expiry:"2026-12-31",url:"https://www.sc.com/lk/credit-cards/installment-plan/"}
+];
+
+let myCards=[],offers=[],nextId=3000;
+let selBanks=new Set(),fCat='all',fTime='all',sortBy='expiry';
+let selColor=0,editId=null,curCardTab='my';
+
+function load(){
+  // Always start with full SEED data - no localStorage dependency for offers
+  myCards=[...DEFAULT_MY_CARDS];
+  offers=[...SEED];
+  nextId=3000;
+  // Then restore user customizations from localStorage if available
+  try{
+    ['card-offers-v3','card-offers-v4','card-offers-v3'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+    const r=localStorage.getItem(STORE);
+    if(r){
+      const d=JSON.parse(r);
+      // Restore user's card wallet
+      if(d.myCards&&d.myCards.length>0) myCards=d.myCards;
+      // Merge: keep SEED offers + add any user-added offers (id >= 3000)
+      const userAdded=(d.offers||[]).filter(o=>o.id>=3000);
+      // Also restore user deletions
+      const deletedIds=new Set((d.deletedIds||[]));
+      offers=[...SEED.filter(o=>!deletedIds.has(o.id)),...userAdded];
+      nextId=d.nextId||3000;
+    }
+  }catch(e){}
+  rebuildBankFilter();renderMyCards();render();
+}
+function save(){
+  try{
+    const deletedIds=[...SEED.map(o=>o.id)].filter(id=>!offers.find(o=>o.id===id));
+    const userAdded=offers.filter(o=>o.id>=3000);
+    localStorage.setItem(STORE,JSON.stringify({myCards,userAdded,deletedIds,nextId,offers}));
+  }catch(e){}
+}
+
+function daysLeft(s){const e=new Date(s);e.setHours(0,0,0,0);return Math.ceil((e-TODAY)/86400000);}
+function fmtDate(s){return new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function colorFor(bankName){const c=myCards.find(c=>c.bankName===bankName);return c?c.color:null;}
+function discNum(d){const m=d.match(/\d+/);return m?parseInt(m[0]):0;}
+
+function renderMyCards(){
+  document.getElementById('my-cards-row').innerHTML=
+    myCards.map(c=>`<div class="my-card" style="border-color:${c.color.bg}">
+      <span class="card-dot" style="background:${c.color.t}"></span>
+      <span>${c.bankName}</span><span class="card-sub">${c.cardType}</span>
+      <button class="icn-btn" onclick="removeMyCard('${c.id}')" style="margin-left:2px;font-size:12px"><i class="ti ti-x"></i></button>
+    </div>`).join('')+
+    `<button class="add-card-btn" onclick="openCardModal()"><i class="ti ti-plus"></i> Add card</button>`;
+}
+
+function removeMyCard(id){myCards=myCards.filter(c=>c.id!==id);save();rebuildBankFilter();renderMyCards();render();}
+
+function rebuildBankFilter(){
+  const names=[...new Set(myCards.map(c=>c.bankName))];
+  for(const b of selBanks)if(!names.includes(b))selBanks.delete(b);
+  const row=document.getElementById('bank-row');
+  let h='<span class="tlbl">Banks</span>';
+  h+=`<div class="chip ${selBanks.size===0?'on':''}" onclick="togBank('__all__',this)">All</div>`;
+  names.forEach(b=>h+=`<div class="chip ${selBanks.has(b)?'on':''}" data-b="${b}" onclick="togBank('${b}',this)">${b}</div>`);
+  row.innerHTML=h;
+  const sel=document.getElementById('f-bank');
+  if(sel){const cur=sel.value;sel.innerHTML=names.map(b=>`<option${b===cur?' selected':''}>${b}</option>`).join('');}
+}
+
+function togBank(b,el){
+  if(b==='__all__'){selBanks.clear();}
+  else{selBanks.has(b)?selBanks.delete(b):selBanks.add(b);}
+  document.getElementById('bank-row').querySelectorAll('.chip').forEach(c=>{
+    const bv=c.dataset.b;
+    c.classList.toggle('on',bv?selBanks.has(bv):selBanks.size===0);
+  });
+  render();
+}
+
+function fltCat(v,el){fCat=v;el.closest('.trow').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');render();}
+function fltTime(v,el){fTime=v;el.closest('.trow').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');render();}
+function setSort(v,el){sortBy=v;document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');render();}
+
+function render(){
+  document.getElementById('date-disp').textContent=TODAY.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  const urg=offers.filter(o=>{const d=daysLeft(o.expiry);return d>=0&&d<=7;});
+  const tod=offers.filter(o=>daysLeft(o.expiry)===0);
+  const banks=new Set(offers.map(o=>o.bank));
+  const cats=new Set(offers.map(o=>o.cat));
+  document.getElementById('s-total').textContent=offers.length;
+  document.getElementById('s-urg').textContent=urg.length;
+  document.getElementById('s-today').textContent=tod.length;
+  document.getElementById('s-banks').textContent=banks.size;
+  document.getElementById('s-cats').textContent=cats.size;
+  const bn=document.getElementById('banner');
+  if(urg.length>0){bn.style.display='flex';const p=[];if(tod.length)p.push(tod.length+' offer'+(tod.length>1?'s':'')+' expire today');const r=urg.length-tod.length;if(r)p.push(r+' more expiring within 7 days');document.getElementById('banner-txt').textContent=p.join(' · ')+' — act fast!';}
+  else bn.style.display='none';
+  const q=document.getElementById('si').value.trim().toLowerCase();
+  let list=offers.filter(o=>{
+    if(selBanks.size>0&&!selBanks.has(o.bank))return false;
+    if(fCat!=='all'&&o.cat!==fCat)return false;
+    if(fTime==='week'){const d=daysLeft(o.expiry);if(d<0||d>7)return false;}
+    if(fTime==='month'){const d=daysLeft(o.expiry);if(d<0||d>31)return false;}
+    if(q&&!(o.title+' '+o.desc+' '+o.bank+' '+o.cat+' '+o.disc).toLowerCase().includes(q))return false;
+    return true;
+  });
+  if(sortBy==='expiry')list.sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));
+  else if(sortBy==='bank')list.sort((a,b)=>a.bank.localeCompare(b.bank));
+  else if(sortBy==='discount')list.sort((a,b)=>discNum(b.disc)-discNum(a.disc));
+  else list.sort((a,b)=>a.cat.localeCompare(b.cat));
+  const grid=document.getElementById('grid');
+  if(!list.length){grid.innerHTML=`<div class="empty-state"><i class="ti ti-inbox"></i>No offers match your filters.</div><button class="add-tile" onclick="openOfferModal()"><i class="ti ti-plus"></i> Add offer</button>`;return;}
+  grid.innerHTML=list.map(o=>{
+    const d=daysLeft(o.expiry);
+    const isExp=d<0,isT=d===0,isU=d>=0&&d<=3,isW=d>=0&&d<=7&&!isU;
+    const cls=(isU||isT)?'urgent':isW?'warn':'';
+    let eH;
+    if(isExp)eH=`<span class="exp-tag urgent"><i class="ti ti-alert-circle"></i>Expired</span>`;
+    else if(isT)eH=`<span class="exp-tag urgent"><i class="ti ti-clock"></i>Expires today!</span>`;
+    else if(isU)eH=`<span class="exp-tag urgent"><i class="ti ti-clock"></i>${d}d left</span>`;
+    else if(isW)eH=`<span class="exp-tag warn"><i class="ti ti-clock"></i>${d}d left</span>`;
+    else eH=`<span class="exp-tag"><i class="ti ti-calendar"></i>Until ${fmtDate(o.expiry)}</span>`;
+    const isDeep=o.url&&(o.url.includes('/offer-details/')||o.url.includes('/promotions/dining')||o.url.includes('/promotions/hotels')||o.url.includes('/promotions/online')||o.url.includes('/promotions/other')||o.url.includes('360-rewards')||o.url.includes('the-good-life')||o.url.includes('installment-plan')||o.url.includes('maxrewards')||o.url.includes('/card-offers/supermarkets/')||o.url.includes('/card-offers/zero-plans/')||o.url.includes('/card-offers/travel-and-leisure/')||o.url.includes('/card-offers/dining/')||o.url.includes('/promotions/cards/supermarket/')||o.url.includes('/promotions/cards/dining/')||o.url.includes('/promotions/cards/style/')||o.url.includes('/promotions/cards/auto')||o.url.includes('/promotions/cards/travel/'));
+    const srcLbl=isDeep?'View offer':'View all offers';
+    const src=o.url?`<a href="${o.url}" class="src-link" target="_blank" rel="noopener"><i class="ti ti-external-link"></i>${srcLbl}</a>`:'';
+    const col=colorFor(o.bank);
+    const bS=col?`style="background:${col.bg};color:${col.t}"`:`style="background:var(--surface2);color:var(--text2)"`;
+    return `<div class="ocard ${cls}">
+      <div class="ctop"><div class="badges"><span class="bk-badge" ${bS}>${o.bank}</span><span class="cat-badge">${o.cat}</span></div>
+      <div class="cacts"><button class="icn-btn edit" onclick="editOffer(${o.id})" aria-label="Edit"><i class="ti ti-pencil"></i></button><button class="icn-btn" onclick="delOffer(${o.id})" aria-label="Delete"><i class="ti ti-trash"></i></button></div></div>
+      <div class="ctitle">${o.title}</div>
+      <div class="cdesc">${o.desc}</div>
+      <div class="cfoot"><div style="display:flex;flex-direction:column;gap:3px">${eH}${src}</div><span class="disc-tag">${o.disc}</span></div>
+    </div>`;
+  }).join('')+`<button class="add-tile" onclick="openOfferModal()"><i class="ti ti-plus"></i> Add offer</button>`;
+}
+
+/* Offer modal */
+function openOfferModal(id){
+  editId=id||null;
+  document.getElementById('offer-title').textContent=id?'Edit offer':'Add new offer';
+  const sel=document.getElementById('f-bank');
+  sel.innerHTML=myCards.map(c=>`<option>${c.bankName}</option>`).join('');
+  if(id){const o=offers.find(x=>x.id===id);if(o){sel.value=o.bank;document.getElementById('f-cat').value=o.cat;document.getElementById('f-title').value=o.title;document.getElementById('f-desc').value=o.desc;document.getElementById('f-disc').value=o.disc;document.getElementById('f-exp').value=o.expiry;document.getElementById('f-url').value=o.url||'';}}
+  else ['f-title','f-desc','f-disc','f-exp','f-url'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('offer-ov').classList.add('open');
+  setTimeout(()=>document.getElementById('f-title').focus(),50);
+}
+function closeOfferModal(){document.getElementById('offer-ov').classList.remove('open');editId=null;}
+function saveOffer(){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){alert('Please enter an offer title.');return;}
+  const obj={bank:document.getElementById('f-bank').value,cat:document.getElementById('f-cat').value,title,desc:document.getElementById('f-desc').value||'',disc:document.getElementById('f-disc').value||'',expiry:document.getElementById('f-exp').value||'2026-12-31',url:document.getElementById('f-url').value||''};
+  if(editId){const i=offers.findIndex(o=>o.id===editId);if(i!==-1)offers[i]={...offers[i],...obj};}
+  else offers.unshift({id:nextId++,...obj});
+  closeOfferModal();save();render();
+}
+function editOffer(id){openOfferModal(id);}
+function delOffer(id){offers=offers.filter(o=>o.id!==id);save();render();}
+
+/* Card modal */
+function openCardModal(){renderColorPicker();renderMyCardList();renderAllBanksList();document.getElementById('card-ov').classList.add('open');}
+function closeCardModal(){document.getElementById('card-ov').classList.remove('open');}
+function cardTab(t,el){
+  curCardTab=t;
+  document.querySelectorAll('.tab-row .tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');
+  document.getElementById('tab-my').style.display=t==='my'?'block':'none';
+  document.getElementById('tab-all').style.display=t==='all'?'block':'none';
+}
+function renderColorPicker(){
+  document.getElementById('color-row').innerHTML=PALETTE.map((p,i)=>
+    `<div class="cswatch ${i===selColor?'sel':''}" style="background:${p.t}" onclick="pickColor(${i})" title="${p.l}"></div>`).join('');
+}
+function pickColor(i){selColor=i;renderColorPicker();}
+function renderMyCardList(){
+  document.getElementById('card-list').innerHTML=myCards.map(c=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:var(--radius-sm)">
+      <span style="width:9px;height:9px;border-radius:50%;background:${c.color.t};flex-shrink:0;display:inline-block"></span>
+      <span style="font-size:13px;font-weight:500;flex:1">${c.bankName}</span>
+      <span style="font-size:11px;color:var(--text2);font-family:'DM Mono',monospace">${c.cardType}</span>
+      <button class="icn-btn" onclick="removeMyCard('${c.id}');renderMyCardList()" aria-label="Remove"><i class="ti ti-trash"></i></button>
+    </div>`).join('')||`<div style="font-size:13px;color:var(--text3);padding:6px 0">No cards yet.</div>`;
+}
+function renderAllBanksList(){
+  document.getElementById('all-banks-list').innerHTML=ALL_BANKS.map(b=>{
+    const bDef=ALL_BANKS.find(x=>x.name===b.name);
+    const col=bDef?bDef.color:PALETTE[0];
+    return `<div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${col.t};flex-shrink:0"></span>
+        ${b.name}
+        <a href="${b.offersUrl}" target="_blank" rel="noopener" style="font-size:10px;color:var(--text3);text-decoration:none;margin-left:auto;display:flex;align-items:center;gap:2px"><i class="ti ti-external-link" style="font-size:11px"></i>Offers</a>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${b.cards.map(ct=>{
+          const isSelected=myCards.some(c=>c.bankName===b.name&&c.cardType===ct);
+          const chipStyle=isSelected
+            ? `background:${col.t};color:#fff;border-color:${col.t}`
+            : `background:var(--surface);color:var(--text2);border-color:var(--border2)`;
+          const icon=isSelected?'<i class="ti ti-check" style="font-size:11px;margin-right:3px"></i>':'';
+          return `<div class="chip" style="font-size:11px;padding:3px 9px;${chipStyle};transition:all .15s" onclick="addBankCard('${b.name}','${ct}')">${icon}${ct}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+function addBankCard(bankName,cardType){
+  const bDef=ALL_BANKS.find(b=>b.name===bankName);
+  const color=bDef?bDef.color:PALETTE[selColor];
+  const id=bankName.toLowerCase().replace(/\s+/g,'-')+'-'+cardType.toLowerCase().replace(/\s+/g,'-')+'-'+Date.now();
+  const already=myCards.find(c=>c.bankName===bankName&&c.cardType===cardType);
+  if(already){
+    // Deselect — remove from wallet
+    myCards=myCards.filter(c=>!(c.bankName===bankName&&c.cardType===cardType));
+  } else {
+    myCards.push({id,bankName,cardType,color});
+  }
+  save();rebuildBankFilter();renderMyCards();renderAllBanksList();renderMyCardList();render();
+}
+function addCustomCard(){
+  const name=document.getElementById('nc-bank').value.trim();
+  const type=document.getElementById('nc-type').value.trim();
+  if(!name){alert('Please enter a bank name.');return;}
+  myCards.push({id:name.toLowerCase().replace(/\s+/g,'-')+'-'+Date.now(),bankName:name,cardType:type||'Credit Card',color:PALETTE[selColor]});
+  document.getElementById('nc-bank').value='';document.getElementById('nc-type').value='';
+  save();rebuildBankFilter();renderMyCards();renderMyCardList();render();
+}
+
+function ovClick(e,id){
+  if(e.target.id===id){if(id==='offer-ov')closeOfferModal();else closeCardModal();}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOfferModal();closeCardModal();}});
+load();
+</script>
+</body>
+</html>
