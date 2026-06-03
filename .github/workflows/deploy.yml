@@ -1,1 +1,118 @@
+name: Daily Scrape & Deploy
 
+on:
+  schedule:
+    - cron: '30 0 * * *'   # 6:00 AM Sri Lanka time
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  scrape-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Puppeteer
+        run: |
+          npm install puppeteer
+          npx puppeteer browsers install chrome
+
+      - name: Run scraper
+        run: node scraper/scrape.js
+        timeout-minutes: 25
+        continue-on-error: true
+
+      - name: Build index.html
+        run: |
+          node - << 'JS'
+          const fs = require('fs');
+
+          const offersFile   = 'scraper/offers.json';
+          const templateFile = 'index.template.html';
+          const outputFile   = 'index.html';
+
+          // If scraper didn't produce offers, keep existing index.html
+          if (!fs.existsSync(offersFile)) {
+            console.log('No offers.json — keeping existing index.html');
+            process.exit(0);
+          }
+
+          const offers = JSON.parse(fs.readFileSync(offersFile, 'utf8'));
+
+          // Safety check — must have enough real offers
+          if (offers.length < 80) {
+            console.log(`Only ${offers.length} offers scraped — too few, keeping existing index.html`);
+            process.exit(0);
+          }
+
+          if (!fs.existsSync(templateFile)) {
+            console.error('index.template.html not found!');
+            process.exit(1);
+          }
+
+          function clean(s) {
+            return String(s||'').replace(/\\/g,'\\\\').replace(/`/g,"'").replace(/\${/g,'\\${').slice(0,500);
+          }
+
+          const seedLines = offers.map(o =>
+            `  {id:${o.id},bank:${JSON.stringify(clean(o.bank))},cat:${JSON.stringify(clean(o.cat))},` +
+            `title:${JSON.stringify(clean(o.title))},desc:${JSON.stringify(clean(o.desc))},` +
+            `disc:${JSON.stringify(clean(o.disc))},expiry:${JSON.stringify(o.expiry)},url:${JSON.stringify(clean(o.url))}}`
+          );
+          const seedJS = `const SEED=[\n${seedLines.join(',\n')}\n];`;
+
+          let html = fs.readFileSync(templateFile, 'utf8');
+          if (!html.includes('const SEED=[')) {
+            console.error('SEED marker not found in template!');
+            process.exit(1);
+          }
+          html = html.replace(/const SEED=\[[\s\S]*?\];/, seedJS);
+
+          const now = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+          html = html.replace(/\{\{LAST_UPDATED\}\}/g, now);
+
+          fs.writeFileSync(outputFile, html);
+          console.log(`✅ Built index.html with ${offers.length} offers`);
+          JS
+
+      - name: Commit changes
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name  "github-actions[bot]"
+          git add index.html scraper/offers.json 2>/dev/null || true
+          git diff --staged --quiet && echo "Nothing to commit" && exit 0
+          git commit -m "bot: daily update $(date +'%Y-%m-%d')"
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
