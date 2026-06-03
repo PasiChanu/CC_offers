@@ -476,33 +476,49 @@ let selBanks=new Set(),fCat='all',fTime='all',sortBy='expiry';
 let selColor=0,editId=null,curCardTab='my';
 
 function load(){
-  // Always start with full SEED data - no localStorage dependency for offers
-  myCards=[...DEFAULT_MY_CARDS];
+  // Clear old storage keys from previous versions
+  ['card-offers-v3','card-offers-v4'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+
+  // Always load latest SEED offers
   offers=[...SEED];
   nextId=3000;
-  // Then restore user customizations from localStorage if available
+
   try{
-    ['card-offers-v3','card-offers-v4','card-offers-v3'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
     const r=localStorage.getItem(STORE);
     if(r){
       const d=JSON.parse(r);
-      // Restore user's card wallet
-      if(d.myCards&&d.myCards.length>0) myCards=d.myCards;
-      // Merge: keep SEED offers + add any user-added offers (id >= 3000)
-      const userAdded=(d.offers||[]).filter(o=>o.id>=3000);
-      // Also restore user deletions
-      const deletedIds=new Set((d.deletedIds||[]));
+
+      // Restore user's saved card wallet — never override with defaults
+      // cardsSet flag means user has interacted with cards at least once
+      if(d.cardsSet===true){
+        myCards=d.myCards||[];
+      } else {
+        // First time ever visiting — use defaults
+        myCards=[...DEFAULT_MY_CARDS];
+      }
+
+      // Merge SEED with user additions and respect deletions
+      const userAdded=(d.userAdded||[]).filter(o=>o.id>=3000);
+      const deletedIds=new Set(d.deletedIds||[]);
       offers=[...SEED.filter(o=>!deletedIds.has(o.id)),...userAdded];
       nextId=d.nextId||3000;
+    } else {
+      // Brand new visitor — use default cards, show all SEED offers
+      myCards=[...DEFAULT_MY_CARDS];
     }
-  }catch(e){}
+  }catch(e){
+    myCards=[...DEFAULT_MY_CARDS];
+    offers=[...SEED];
+  }
+
   rebuildBankFilter();renderMyCards();render();
 }
 function save(){
   try{
     const deletedIds=[...SEED.map(o=>o.id)].filter(id=>!offers.find(o=>o.id===id));
     const userAdded=offers.filter(o=>o.id>=3000);
-    localStorage.setItem(STORE,JSON.stringify({myCards,userAdded,deletedIds,nextId,offers}));
+    // Always save myCards with hasOwnProperty flag so load() knows user has set their cards
+    localStorage.setItem(STORE,JSON.stringify({myCards,userAdded,deletedIds,nextId,offers,cardsSet:true}));
   }catch(e){}
 }
 
