@@ -551,11 +551,13 @@ function setSort(v,el){sortBy=v;document.querySelectorAll('.sort-btn').forEach(b
 
 function render(){
   document.getElementById('date-disp').textContent=TODAY.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-  const urg=offers.filter(o=>{const d=daysLeft(o.expiry);return d>=0&&d<=7;});
-  const tod=offers.filter(o=>daysLeft(o.expiry)===0);
-  const banks=new Set(offers.map(o=>o.bank));
-  const cats=new Set(offers.map(o=>o.cat));
-  document.getElementById('s-total').textContent=offers.length;
+  const myBankSet=new Set(myCards.map(c=>c.bankName));
+  const visibleOffers=offers.filter(o=>(myBankSet.size===0||myBankSet.has(o.bank))&&daysLeft(o.expiry)>=0);
+  const urg=visibleOffers.filter(o=>{const d=daysLeft(o.expiry);return d>=0&&d<=7;});
+  const tod=visibleOffers.filter(o=>daysLeft(o.expiry)===0);
+  const banks=new Set(visibleOffers.map(o=>o.bank));
+  const cats=new Set(visibleOffers.map(o=>o.cat));
+  document.getElementById('s-total').textContent=visibleOffers.length;
   document.getElementById('s-urg').textContent=urg.length;
   document.getElementById('s-today').textContent=tod.length;
   document.getElementById('s-banks').textContent=banks.size;
@@ -564,7 +566,11 @@ function render(){
   if(urg.length>0){bn.style.display='flex';const p=[];if(tod.length)p.push(tod.length+' offer'+(tod.length>1?'s':'')+' expire today');const r=urg.length-tod.length;if(r)p.push(r+' more expiring within 7 days');document.getElementById('banner-txt').textContent=p.join(' · ')+' — act fast!';}
   else bn.style.display='none';
   const q=document.getElementById('si').value.trim().toLowerCase();
+  // Only show offers from banks in user's wallet
+  const myBankNames=new Set(myCards.map(c=>c.bankName));
   let list=offers.filter(o=>{
+    if(daysLeft(o.expiry)<0)return false; // hide expired offers
+    if(myBankNames.size>0&&!myBankNames.has(o.bank))return false;
     if(selBanks.size>0&&!selBanks.has(o.bank))return false;
     if(fCat!=='all'&&o.cat!==fCat)return false;
     if(fTime==='week'){const d=daysLeft(o.expiry);if(d<0||d>7)return false;}
@@ -577,7 +583,13 @@ function render(){
   else if(sortBy==='discount')list.sort((a,b)=>discNum(b.disc)-discNum(a.disc));
   else list.sort((a,b)=>a.cat.localeCompare(b.cat));
   const grid=document.getElementById('grid');
-  if(!list.length){grid.innerHTML=`<div class="empty-state"><i class="ti ti-inbox"></i>No offers match your filters.</div><button class="add-tile" onclick="openOfferModal()"><i class="ti ti-plus"></i> Add offer</button>`;return;}
+  if(!list.length){
+    const msg=myBankNames.size===0
+      ?'Add cards to your wallet to see offers'
+      :'No offers match your filters.';
+    grid.innerHTML=`<div class="empty-state"><i class="ti ti-inbox"></i>${msg}</div><button class="add-tile" onclick="openOfferModal()"><i class="ti ti-plus"></i> Add offer</button>`;
+    return;
+  }
   grid.innerHTML=list.map(o=>{
     const d=daysLeft(o.expiry);
     const isExp=d<0,isT=d===0,isU=d>=0&&d<=3,isW=d>=0&&d<=7&&!isU;
