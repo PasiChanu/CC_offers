@@ -1,0 +1,11 @@
+{
+  "name": "sl-card-offers-scraper",
+  "version": "2.0.0",
+  "description": "Daily scraper for Sri Lanka bank credit card offers",
+  "scripts": {
+    "scrape": "node scrape.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}
